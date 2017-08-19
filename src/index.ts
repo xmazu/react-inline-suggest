@@ -1,0 +1,1 @@
+export { SimpleInlineSuggest } from './SimpleInlineSuggest';
