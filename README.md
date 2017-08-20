@@ -58,7 +58,7 @@ class ExampleApp extends React.Component {
     );
   }
 
-  private onChangeValue = e => {
+  onChangeValue = e => {
     this.setState({ value: e.currentTarget.value });
   }
 }
