@@ -6,6 +6,20 @@
     "name": "Maciej Kański",
     "email": "xmazu@yahoo.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xmazu/react-inline-suggest"
+  },
+  "bugs": {
+    "url": "https://github.com/xmazu/react-inline-suggest/issues"
+  },
+  "keywords": [
+    "react",
+    "autocomplete",
+    "suggestions",
+    "inline",
+    "react-inline-suggest"
+  ],
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --config scripts/webpack.dev.config --profile",
@@ -16,7 +30,10 @@
     "prepublish": "npm run build",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "gh-pages:clean": "rimraf .gh-pages",
+    "gh-pages:build": "build-storybook -o .gh-pages",
+    "gh-pages:publish": "git-directory-deploy --directory .gh-pages",
+    "gh-pages": "npm run gh-pages:clean && npm run gh-pages:build && npm run gh-pages:publish"
   },
   "main": "lib/index.js",
   "devDependencies": {
@@ -33,6 +50,7 @@
     "css-loader": "^0.28.5",
     "enzyme": "^2.9.1",
     "fork-ts-checker-webpack-plugin": "^0.2.7",
+    "git-directory-deploy": "^1.5.1",
     "html-webpack-plugin": "^2.30.1",
     "jest": "^20.0.4",
     "react": "^15.6.1",
