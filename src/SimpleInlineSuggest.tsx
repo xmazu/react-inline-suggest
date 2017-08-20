@@ -4,12 +4,14 @@ import { ReactElement } from 'react';
 export namespace SimpleInlineSuggest {
   export type Props = {
     value: string;
-    haystack: string[];
+    haystack: any[];
     onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
-    onTabOrEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    getFn?: (obj: any) => string;
+    onMatch?: (v: string | any) => void;
   };
 
   export type State = {
+    match: string | any;
     needle: string;
   };
 }
@@ -25,16 +27,16 @@ export class SimpleInlineSuggest extends React.Component<
     super(props);
 
     this.state = {
+      match: '',
       needle: ''
     };
   }
 
   render(): ReactElement<any> {
-    const { onTabOrEnter } = this.props;
-
     return (
       <input
         value={`${this.props.value}${this.state.needle}`}
+        onBlur={this.handleOnBlur}
         onChange={this.handleOnChange}
         onKeyDown={this.handleOnKeyDown}
         onKeyUp={this.handleOnKeyUp}
@@ -42,7 +44,7 @@ export class SimpleInlineSuggest extends React.Component<
     );
   }
 
-  private fireOnChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+  private fireOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     if (this.props.onChange) {
       this.props.onChange(e);
     }
@@ -51,7 +53,7 @@ export class SimpleInlineSuggest extends React.Component<
   private handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget } = e;
     const { value } = currentTarget;
-    const { haystack } = this.props;
+    const { getFn, haystack } = this.props;
 
     const performMatch = value.length > this.props.value.length;
 
@@ -63,36 +65,45 @@ export class SimpleInlineSuggest extends React.Component<
 
       return;
     }
-    
+
     const rx = RegExp(`^${value}`, 'i');
-    const match = haystack.find(v => rx.test(v));
+    const match = haystack.find(
+      v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
+    );
 
     if (match) {
-      const originalValue = match.substr(0, value.length);
+      const matchedStr = getFn === undefined ? match : getFn(match);
+      const originalValue = matchedStr.substr(0, value.length);
       this.setState(
         {
-          needle: match.replace(originalValue, '')
+          match,
+          needle: matchedStr.replace(originalValue, '')
         },
         () => {
           currentTarget.focus();
-          currentTarget.setSelectionRange(value.length, match.length);
+          currentTarget.setSelectionRange(value.length, matchedStr.length);
         }
       );
     } else {
       this.setState({
+        match,
         needle: ''
       });
     }
     this.fireOnChange(e);
   };
 
+  private handleOnBlur = (e: React.FormEvent<HTMLInputElement>) => {
+    this.setState({
+      needle: ''
+    });
+  };
+
   private handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { keyCode } = e;
     const { needle } = this.state;
-    const { onTabOrEnter } = this.props;
 
     if (
-      !!onTabOrEnter &&
       needle !== '' &&
       (keyCode === SimpleInlineSuggest.TAB_KEY ||
         keyCode === SimpleInlineSuggest.ENTER_KEY)
@@ -104,10 +115,8 @@ export class SimpleInlineSuggest extends React.Component<
   private handleOnKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { keyCode } = e;
     const { needle } = this.state;
-    const { onTabOrEnter } = this.props;
 
     if (
-      !!onTabOrEnter &&
       needle !== '' &&
       (keyCode === SimpleInlineSuggest.TAB_KEY ||
         keyCode === SimpleInlineSuggest.ENTER_KEY)
@@ -127,7 +136,11 @@ export class SimpleInlineSuggest extends React.Component<
         needle: ''
       });
 
-      this.props.onTabOrEnter!(newEvent);
+      this.fireOnChange(newEvent);
+
+      if (this.props.onMatch) {
+        this.props.onMatch(this.state.match);
+      } 
     }
   };
 }
