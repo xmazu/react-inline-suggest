@@ -2,46 +2,62 @@ import * as React from 'react';
 import { ReactElement } from 'react';
 
 export namespace SimpleInlineSuggest {
-  export type Props = React.HTMLProps<HTMLInputElement> & {
+  export type Props = {
     value: string;
     haystack: string[];
+    onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
+    onTabOrEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   };
 
   export type State = {
-    currentValue: string;
     needle: string;
   };
 }
 
-export class SimpleInlineSuggest extends React.Component<SimpleInlineSuggest.Props, SimpleInlineSuggest.State> {
+export class SimpleInlineSuggest extends React.Component<
+  SimpleInlineSuggest.Props,
+  SimpleInlineSuggest.State
+> {
+  static readonly TAB_KEY = 9;
+  static readonly ENTER_KEY = 13;
+
   constructor(props: SimpleInlineSuggest.Props) {
     super(props);
 
     this.state = {
-      currentValue: '',
       needle: ''
     };
   }
 
   render(): ReactElement<any> {
+    const { onTabOrEnter } = this.props;
+
     return (
-      <input 
+      <input
+        value={`${this.props.value}${this.state.needle}`}
         onChange={this.handleOnChange}
-        value={`${this.state.currentValue}${this.state.needle}`}
+        onKeyDown={!!onTabOrEnter && this.handleOnKeyDown}
+        onKeyUp={!!onTabOrEnter && this.handleOnKeyUp}
       />
     );
   }
 
-  private handleOnChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+  private fireOnChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    if (this.props.onChange) {
+      this.props.onChange(e);
+    }
+  };
+
+  private handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget } = e;
     const { value } = currentTarget;
     const { haystack } = this.props;
 
-    const performMatch = value.length > this.state.currentValue.length;
+    const performMatch = value.length > this.props.value.length;
 
     if (!performMatch) {
+      this.fireOnChange(e);
       this.setState({
-        currentValue: value,
         needle: ''
       });
 
@@ -51,29 +67,63 @@ export class SimpleInlineSuggest extends React.Component<SimpleInlineSuggest.Pro
     const match = haystack.find(v => v.indexOf(value) === 0);
 
     if (match) {
-      this.setState({
-        currentValue: value,
-        needle: match.replace(value, '')
-      }, () => {
-        currentTarget.focus();
-        currentTarget.setSelectionRange(value.length, match.length);
-      });
+      this.setState(
+        {
+          needle: match.replace(value, '')
+        },
+        () => {
+          currentTarget.focus();
+          currentTarget.setSelectionRange(value.length, match.length);
+        }
+      );
     } else {
       this.setState({
-        currentValue: value,
         needle: ''
       });
     }
+    this.fireOnChange(e);
+  };
 
-    if (this.props.onChange) {
-      const newEvent: React.FormEvent<HTMLInputElement> = {
+  private handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { keyCode } = e;
+    const { needle } = this.state;
+    const { onTabOrEnter } = this.props;
+
+    if (
+      !!onTabOrEnter &&
+      needle !== '' &&
+      (keyCode === SimpleInlineSuggest.TAB_KEY ||
+        keyCode === SimpleInlineSuggest.ENTER_KEY)
+    ) {
+      e.preventDefault();
+    }
+  };
+
+  private handleOnKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { keyCode } = e;
+    const { needle } = this.state;
+
+    if (
+      needle !== '' &&
+      (keyCode === SimpleInlineSuggest.TAB_KEY ||
+        keyCode === SimpleInlineSuggest.ENTER_KEY)
+    ) {
+      const newValue = `${this.props.value}${this.state.needle}`;
+      const newEvent = {
         ...e,
         currentTarget: {
           ...e.currentTarget,
-          value
+          value: newValue
         }
-      }
-      this.props.onChange(newEvent);
+      };
+
+      e.currentTarget.setSelectionRange(newValue.length, newValue.length);
+
+      this.setState({
+        needle: ''
+      });
+
+      this.props.onTabOrEnter(newEvent);
     }
   };
 }

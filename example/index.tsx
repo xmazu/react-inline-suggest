@@ -26,14 +26,18 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
         haystack={['maciek', 'test']}
         value={this.state.value}
         onChange={this.onChangeValue}
+        onTabOrEnter={this.handleOnTab}
       />
     );
   }
 
   private onChangeValue = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    console.log(e.currentTarget.value);
     this.setState({ value: e.currentTarget.value });
   }
+
+  private handleOnTab = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    this.setState({ value: e.currentTarget.value });
+  };
 }
 
 const el = document.getElementById('root');
