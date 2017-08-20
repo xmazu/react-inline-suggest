@@ -13,6 +13,7 @@
   "bugs": {
     "url": "https://github.com/xmazu/react-inline-suggest/issues"
   },
+  "homepage": "https://xmazu.github.io/react-inline-suggest/",
   "keywords": [
     "react",
     "autocomplete",
