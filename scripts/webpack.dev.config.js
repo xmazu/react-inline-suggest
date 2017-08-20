@@ -10,7 +10,7 @@ const context = path.resolve(__dirname, '../');
 const absolute = (subPath) => path.resolve(context, subPath);
 
 const config = {
-  context: context,
+  context,
   target: 'web',
   entry: {
     app: './example/index.tsx',

@@ -9,10 +9,12 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --config scripts/webpack.dev.config --profile",
-    "clean": "rimraf lib",
-    "build": "npm run clean && tsc",
+    "clean": "rimraf lib && rimraf dist",
+    "build": "npm run build:lib && webpack --config scripts/webpack.prod.config.js",
+    "build:lib": "rimraf lib && tsc",
+    "prebuild": "rimraf dist && mkdir dist",
     "prepublish": "npm run build",
-    "test": "jest --coverage",
+    "test": "jest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -73,5 +75,8 @@
       "js",
       "json"
     ]
+  },
+  "dependencies": {
+    "source-map-loader": "^0.2.1"
   }
 }
