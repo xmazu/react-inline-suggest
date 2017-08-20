@@ -36,8 +36,8 @@ export class SimpleInlineSuggest extends React.Component<
       <input
         value={`${this.props.value}${this.state.needle}`}
         onChange={this.handleOnChange}
-        onKeyDown={!!onTabOrEnter && this.handleOnKeyDown}
-        onKeyUp={!!onTabOrEnter && this.handleOnKeyUp}
+        onKeyDown={this.handleOnKeyDown}
+        onKeyUp={this.handleOnKeyUp}
       />
     );
   }
@@ -63,13 +63,15 @@ export class SimpleInlineSuggest extends React.Component<
 
       return;
     }
-
-    const match = haystack.find(v => v.indexOf(value) === 0);
+    
+    const rx = RegExp(`^${value}`, 'i');
+    const match = haystack.find(v => rx.test(v));
 
     if (match) {
+      const originalValue = match.substr(0, value.length);
       this.setState(
         {
-          needle: match.replace(value, '')
+          needle: match.replace(originalValue, '')
         },
         () => {
           currentTarget.focus();
@@ -102,8 +104,10 @@ export class SimpleInlineSuggest extends React.Component<
   private handleOnKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { keyCode } = e;
     const { needle } = this.state;
+    const { onTabOrEnter } = this.props;
 
     if (
+      !!onTabOrEnter &&
       needle !== '' &&
       (keyCode === SimpleInlineSuggest.TAB_KEY ||
         keyCode === SimpleInlineSuggest.ENTER_KEY)
@@ -123,7 +127,7 @@ export class SimpleInlineSuggest extends React.Component<
         needle: ''
       });
 
-      this.props.onTabOrEnter(newEvent);
+      this.props.onTabOrEnter!(newEvent);
     }
   };
 }

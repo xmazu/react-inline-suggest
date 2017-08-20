@@ -23,7 +23,7 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
   render() {
     return (
       <SimpleInlineSuggest 
-        haystack={['maciek', 'test']}
+        haystack={['xmazu', 'joHn', 'MaThEo']}
         value={this.state.value}
         onChange={this.onChangeValue}
         onTabOrEnter={this.handleOnTab}
