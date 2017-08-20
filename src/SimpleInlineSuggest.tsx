@@ -8,6 +8,7 @@ export namespace SimpleInlineSuggest {
     onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
     getFn?: (obj: any) => string;
     onMatch?: (v: string | any) => void;
+    ignoreCase?: boolean;
   };
 
   export type State = {
@@ -23,6 +24,10 @@ export class SimpleInlineSuggest extends React.Component<
   static readonly TAB_KEY = 9;
   static readonly ENTER_KEY = 13;
 
+  static defaultProps = {
+    ignoreCase: true
+  };
+
   constructor(props: SimpleInlineSuggest.Props) {
     super(props);
 
@@ -35,6 +40,7 @@ export class SimpleInlineSuggest extends React.Component<
   render(): ReactElement<any> {
     return (
       <input
+        className="simple-inline-suggest"
         value={`${this.props.value}${this.state.needle}`}
         onBlur={this.handleOnBlur}
         onChange={this.handleOnChange}
@@ -53,20 +59,18 @@ export class SimpleInlineSuggest extends React.Component<
   private handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget } = e;
     const { value } = currentTarget;
-    const { getFn, haystack } = this.props;
+    const { getFn, haystack, ignoreCase } = this.props;
 
     const performMatch = value.length > this.props.value.length;
-
     if (!performMatch) {
       this.fireOnChange(e);
       this.setState({
         needle: ''
       });
-
-      return;
+      return false;
     }
 
-    const rx = RegExp(`^${value}`, 'i');
+    const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
     const match = haystack.find(
       v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
     );
