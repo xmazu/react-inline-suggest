@@ -20,6 +20,8 @@ or
 npm install react-inline-suggest --save
 ```
 
+Include `react-inline-suggest.css` from `node_modules/react-inline-suggest/dist` in your project.
+
 ## Demo and examples
 Live demo: [xmazu.github.io/react-inline-suggest](https://xmazu.github.io/react-inline-suggest/)
 

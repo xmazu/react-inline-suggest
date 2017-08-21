@@ -79,7 +79,8 @@
   },
   "files": [
     "lib",
-    "LICENSE"
+    "LICENSE",
+    "dist"
   ],
   "types": "./lib/index.d.ts",
   "jest": {
