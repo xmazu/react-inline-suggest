@@ -2,6 +2,12 @@
 
 > [React](http://facebook.github.io/react/index.html) component for a search input inline suggestions.
 
+## Todo
+
+- Inline suggestion displayed in fancy way
+- Support simple arrays and complex arrays with objects
+- Accept value on **Enter**/**Tab**/**Right Arrow** click
+
 ## Installation
 
 ```shell
@@ -77,8 +83,10 @@ class ExampleApp extends React.Component {
 | ignoreCase | bool  | true      |          | Determines whether the case-sensitivity is relevant                                        |
 
 
-# Todo
+## Todo
 
+- [ ] switch bettween suggestions by click up/down arrow
+- [ ] possibility to decide when show suggestions (e.g. when user types 2 or more characters)
 - [ ] better docs
 - [ ] more tests
 - [ ] CI
