@@ -12,9 +12,7 @@ const absolute = (subPath) => path.resolve(context, subPath);
 const config = {
   context,
   target: 'web',
-  entry: {
-    index: './src/index.ts',
-  },
+  entry: ['./src/index.ts', './scss/inline-suggest.scss'],
   devtool: 'source-map',
   output: {
     filename: 'react-inline-suggest.js',

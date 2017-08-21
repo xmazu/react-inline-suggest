@@ -1,7 +1,7 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 
-import { SimpleInlineSuggest, InlineSuggest } from '../src';
+import { InlineSuggest } from '../src';
 
 import '../scss/inline-suggest.scss';
 
@@ -55,27 +55,6 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
             onChange={this.onChangeValue}
           />
         </div>
-
-        <hr />
-        <h3>SimpleInlineSuggest</h3>
-        <h4>Simple array</h4>
-        <p>Avaiable values: {simpleUsers.join(', ')}</p>
-        <SimpleInlineSuggest 
-          haystack={['xmazu', 'joHn', 'MaThEo']}
-          value={this.state.value}
-          onChange={this.onChangeValue}
-        />
-
-        <h4>Complex array</h4>
-        <p>Avaiable values: {users.map(u => u.username).join(', ')}</p>
-        <SimpleInlineSuggest 
-          haystack={users}
-          value={this.state.value}
-          onChange={this.onChangeValue}
-          getFn={this.getUsername}
-          onMatch={v => console.log(v)}
-          ignoreCase={false}
-        />        
       </div>
     );
   }
