@@ -9,7 +9,12 @@
     background: #fff;
     z-index: 1;
     box-sizing: border-box;
-    width: 100%; }
+    width: 100%;
+    letter-spacing: 0;
+    font-weight: normal;
+    font-family: sans-serif;
+    line-height: 1;
+    font-size: 19px; }
   .inline-suggest div {
     position: absolute;
     top: 0;
@@ -17,6 +22,11 @@
     right: 0;
     bottom: 0;
     padding: 7px;
-    opacity: .4; }
+    opacity: .4;
+    letter-spacing: 0;
+    font-weight: normal;
+    font-family: sans-serif;
+    line-height: 1;
+    font-size: 19.2px; }
 
 /*# sourceMappingURL=react-inline-suggest.css.map*/
