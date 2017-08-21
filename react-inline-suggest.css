@@ -13,20 +13,22 @@
     letter-spacing: 0;
     font-weight: normal;
     font-family: sans-serif;
-    line-height: 1;
+    font-style: normal;
     font-size: 19px; }
   .inline-suggest div {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 2px;
+    left: 2px;
     right: 0;
     bottom: 0;
-    padding: 7px;
+    padding: 5px;
     opacity: .4;
+    margin: 0;
     letter-spacing: 0;
     font-weight: normal;
     font-family: sans-serif;
-    line-height: 1;
-    font-size: 19.2px; }
+    font-style: normal;
+    font-size: 19px;
+    box-sizing: border-box; }
 
 /*# sourceMappingURL=react-inline-suggest.css.map*/
