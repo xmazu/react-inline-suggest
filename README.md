@@ -78,7 +78,7 @@ class ExampleApp extends React.Component {
 | value      | any   | undefined | yes      | initial field value                                                                        |
 | haystack   | array | undefined | yes      | Array of available items to search in. Items can take an arbitrary shape.                  |
 | onChange   | func  | undefined | yes      | onChange handler: function(e: React.FormEvent) {}                                          |
-| onMatch    | func  | undefined |          | Called when Tab or Enter pressed                                                           |
+| onMatch    | func  | undefined |          | Called when Tab/Enter/Right Arrow pressed                                                  |
 | getFn      | func  | undefined |          | Used to read the display value from each entry in haystack: function(item: any): string {} |
 | ignoreCase | bool  | true      |          | Determines whether the case-sensitivity is relevant                                        |
 
