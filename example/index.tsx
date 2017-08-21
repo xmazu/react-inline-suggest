@@ -1,7 +1,9 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 
-import { SimpleInlineSuggest } from '../src';
+import { SimpleInlineSuggest, InlineSuggest } from '../src';
+
+import '../scss/inline-suggest.scss';
 
 namespace ExampleApp {
   export type Props = {};
@@ -30,6 +32,8 @@ const users: User[] = [
   }
 ];
 
+const simpleUsers = ['xmazu', 'joHn', 'MaThEo'];
+
 class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
   constructor() {
     super();
@@ -42,7 +46,20 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
   render() {
     return (
       <div>
+        <h3>InlineSuggest</h3>
+        <p>Avaiable values: {simpleUsers.join(', ')}</p>
+        <div style={{ width: 200 }}>
+          <InlineSuggest
+            haystack={['xmazu', 'joHn', 'MaThEo']}
+            value={this.state.value}
+            onChange={this.onChangeValue}
+          />
+        </div>
+
+        <hr />
+        <h3>SimpleInlineSuggest</h3>
         <h4>Simple array</h4>
+        <p>Avaiable values: {simpleUsers.join(', ')}</p>
         <SimpleInlineSuggest 
           haystack={['xmazu', 'joHn', 'MaThEo']}
           value={this.state.value}
@@ -50,6 +67,7 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
         />
 
         <h4>Complex array</h4>
+        <p>Avaiable values: {users.map(u => u.username).join(', ')}</p>
         <SimpleInlineSuggest 
           haystack={users}
           value={this.state.value}
