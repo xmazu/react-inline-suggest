@@ -2,15 +2,15 @@
 import * as React from 'react';
 import { ReactElement } from 'react';
 import { SuggestType } from './Types';
-export declare namespace SimpleInlineSuggest {
+export declare namespace InlineSuggest {
     type Props = SuggestType.Props;
     type State = SuggestType.State;
 }
-export declare class SimpleInlineSuggest extends React.Component<SimpleInlineSuggest.Props, SimpleInlineSuggest.State> {
+export declare class InlineSuggest extends React.Component<InlineSuggest.Props, InlineSuggest.State> {
     static defaultProps: {
         ignoreCase: boolean;
     };
-    constructor(props: SimpleInlineSuggest.Props);
+    constructor(props: InlineSuggest.Props);
     render(): ReactElement<any>;
     private fireOnChange;
     private handleOnChange;
