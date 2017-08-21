@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ReactElement } from 'react';
 import { SuggestType } from './Types';
 export declare namespace InlineSuggest {
-    type Props = SuggestType.Props;
+    type Props = React.HTMLProps<HTMLInputElement> & SuggestType.Props;
     type State = SuggestType.State;
 }
 export declare class InlineSuggest extends React.Component<InlineSuggest.Props, InlineSuggest.State> {
