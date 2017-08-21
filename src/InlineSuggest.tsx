@@ -4,39 +4,42 @@ import { ReactElement } from 'react';
 import { KeyEnum } from './KeyEnum';
 import { SuggestType } from './Types';
 
-export namespace SimpleInlineSuggest {
+export namespace InlineSuggest {
   export type Props = SuggestType.Props;
 
   export type State = SuggestType.State;
 }
 
-export class SimpleInlineSuggest extends React.Component<
-  SimpleInlineSuggest.Props,
-  SimpleInlineSuggest.State
+export class InlineSuggest extends React.Component<
+  InlineSuggest.Props,
+  InlineSuggest.State
 > {
   static defaultProps = {
     ignoreCase: true
   };
 
-  constructor(props: SimpleInlineSuggest.Props) {
+  constructor(props: InlineSuggest.Props) {
     super(props);
 
     this.state = {
-      match: '',
+      match: null,
       needle: ''
     };
   }
 
   render(): ReactElement<any> {
     return (
-      <input
-        className="simple-inline-suggest"
-        value={`${this.props.value}${this.state.needle}`}
-        onBlur={this.handleOnBlur}
-        onChange={this.handleOnChange}
-        onKeyDown={this.handleOnKeyDown}
-        onKeyUp={this.handleOnKeyUp}
-      />
+      <div className="inline-suggest">
+        <input
+					style={{ background: 'transparent' }}
+					value={this.props.value}
+					onChange={this.handleOnChange}
+					onBlur={this.handleOnBlur}
+					onKeyDown={this.handleOnKeyDown}
+					onKeyUp={this.handleOnKeyUp}
+				/>
+        <div>{`${this.props.value}${this.state.needle}`}</div>
+      </div>
     );
   }
 
@@ -51,19 +54,19 @@ export class SimpleInlineSuggest extends React.Component<
     const { value } = currentTarget;
     const { getFn, haystack, ignoreCase } = this.props;
 
-    const performMatch = value.length > this.props.value.length;
-    if (!performMatch) {
-      this.fireOnChange(e);
-      this.setState({
-        needle: ''
-      });
-      return false;
-    }
+		if (value.length === 0) {
+			this.fireOnChange(e);
+			this.setState({
+				needle: ''
+			});
 
-    const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
+			return false;
+		}
+
+		const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
     const match = haystack.find(
       v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
-    );
+		);
 
     if (match) {
       const matchedStr = getFn === undefined ? match : getFn(match);
@@ -72,12 +75,7 @@ export class SimpleInlineSuggest extends React.Component<
         {
           match,
           needle: matchedStr.replace(originalValue, '')
-        },
-        () => {
-          currentTarget.focus();
-          currentTarget.setSelectionRange(value.length, matchedStr.length);
-        }
-      );
+        });
     } else {
       this.setState({
         match,
@@ -85,8 +83,8 @@ export class SimpleInlineSuggest extends React.Component<
       });
     }
     this.fireOnChange(e);
-  };
-
+	};
+	
   private handleOnBlur = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({
       needle: ''
@@ -123,8 +121,6 @@ export class SimpleInlineSuggest extends React.Component<
           value: newValue
         }
       };
-
-      e.currentTarget.setSelectionRange(newValue.length, newValue.length);
 
       this.setState({
         needle: ''
