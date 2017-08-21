@@ -75,6 +75,8 @@ class ExampleApp extends React.Component {
 
 ## Props
 
+Component extends `React.HTMLProps<HTMLInputElement>` interface and adds some own props.
+
 | Property   | Type  |   Default | Required | Description                                                                                |
 |------------|-------|----------:|----------|--------------------------------------------------------------------------------------------|
 | value      | any   | undefined | yes      | initial field value                                                                        |

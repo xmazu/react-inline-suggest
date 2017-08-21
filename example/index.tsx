@@ -50,6 +50,7 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
         <p>Avaiable values: {simpleUsers.join(', ')}</p>
         <div style={{ width: 200 }}>
           <InlineSuggest
+            className="input"
             haystack={['xmazu', 'joHn', 'MaThEo']}
             value={this.state.value}
             onChange={this.onChangeValue}

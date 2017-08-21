@@ -3,9 +3,14 @@ import { ReactElement } from 'react';
 
 import { KeyEnum } from './KeyEnum';
 import { SuggestType } from './Types';
+import { omit } from './util/omit';
+
+const propsToOmit = [
+  'haystack', 'getFn', 'onMatch', 'ignoreCase', 'className'
+];
 
 export namespace InlineSuggest {
-  export type Props = SuggestType.Props;
+  export type Props = React.HTMLProps<HTMLInputElement> & SuggestType.Props;
 
   export type State = SuggestType.State;
 }
@@ -29,8 +34,9 @@ export class InlineSuggest extends React.Component<
 
   render(): ReactElement<any> {
     return (
-      <div className="inline-suggest">
+      <div className={`inline-suggest ${this.props.className}`}>
         <input
+          {...omit(this.props, propsToOmit)}
           style={{ background: 'transparent' }}
           value={this.props.value}
           onChange={this.handleOnChange}
@@ -84,10 +90,14 @@ export class InlineSuggest extends React.Component<
     this.fireOnChange(e);
   };
 
-  private handleOnBlur = (e: React.FormEvent<HTMLInputElement>) => {
+  private handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     this.setState({
       needle: ''
     });
+
+    if (this.props.onBlur) {
+      this.props.onBlur(e);
+    }
   };
 
   private handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
