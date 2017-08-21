@@ -31,13 +31,13 @@ export class InlineSuggest extends React.Component<
     return (
       <div className="inline-suggest">
         <input
-					style={{ background: 'transparent' }}
-					value={this.props.value}
-					onChange={this.handleOnChange}
-					onBlur={this.handleOnBlur}
-					onKeyDown={this.handleOnKeyDown}
-					onKeyUp={this.handleOnKeyUp}
-				/>
+          style={{ background: 'transparent' }}
+          value={this.props.value}
+          onChange={this.handleOnChange}
+          onBlur={this.handleOnBlur}
+          onKeyDown={this.handleOnKeyDown}
+          onKeyUp={this.handleOnKeyUp}
+        />
         <div>{`${this.props.value}${this.state.needle}`}</div>
       </div>
     );
@@ -54,28 +54,27 @@ export class InlineSuggest extends React.Component<
     const { value } = currentTarget;
     const { getFn, haystack, ignoreCase } = this.props;
 
-		if (value.length === 0) {
-			this.fireOnChange(e);
-			this.setState({
-				needle: ''
-			});
+    if (value.length === 0) {
+      this.fireOnChange(e);
+      this.setState({
+        needle: ''
+      });
 
-			return false;
-		}
+      return false;
+    }
 
-		const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
+    const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
     const match = haystack.find(
       v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
-		);
+    );
 
     if (match) {
       const matchedStr = getFn === undefined ? match : getFn(match);
       const originalValue = matchedStr.substr(0, value.length);
-      this.setState(
-        {
-          match,
-          needle: matchedStr.replace(originalValue, '')
-        });
+      this.setState({
+        match,
+        needle: matchedStr.replace(originalValue, '')
+      });
     } else {
       this.setState({
         match,
@@ -83,8 +82,8 @@ export class InlineSuggest extends React.Component<
       });
     }
     this.fireOnChange(e);
-	};
-	
+  };
+
   private handleOnBlur = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({
       needle: ''
@@ -97,8 +96,7 @@ export class InlineSuggest extends React.Component<
 
     if (
       needle !== '' &&
-      (keyCode === KeyEnum.TAB ||
-        keyCode === KeyEnum.ENTER)
+      (keyCode === KeyEnum.TAB || keyCode === KeyEnum.ENTER)
     ) {
       e.preventDefault();
     }
@@ -111,7 +109,8 @@ export class InlineSuggest extends React.Component<
     if (
       needle !== '' &&
       (keyCode === KeyEnum.TAB ||
-        keyCode === KeyEnum.ENTER)
+        keyCode === KeyEnum.ENTER ||
+        keyCode === KeyEnum.RIGHT_ARROW)
     ) {
       const newValue = `${this.props.value}${this.state.needle}`;
       const newEvent = {
@@ -130,7 +129,7 @@ export class InlineSuggest extends React.Component<
 
       if (this.props.onMatch) {
         this.props.onMatch(this.state.match);
-      } 
+      }
     }
   };
 }
