@@ -54,6 +54,7 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
             haystack={['xmazu', 'joHn', 'MaThEo']}
             value={this.state.value}
             onChange={this.onChangeValue}
+            onMatch={v => console.log(v)}
           />
         </div>
       </div>

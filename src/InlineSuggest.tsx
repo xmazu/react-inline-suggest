@@ -77,10 +77,15 @@ export class InlineSuggest extends React.Component<
     if (match) {
       const matchedStr = getFn === undefined ? match : getFn(match);
       const originalValue = matchedStr.substr(0, value.length);
+      const needle = matchedStr.replace(originalValue, '');
       this.setState({
         match,
-        needle: matchedStr.replace(originalValue, '')
+        needle
       });
+
+      if (needle === '' && this.props.onMatch) {
+        this.props.onMatch(match);
+      }
     } else {
       this.setState({
         match,

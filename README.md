@@ -82,7 +82,7 @@ Component extends `React.HTMLProps<HTMLInputElement>` interface and adds some ow
 | value      | any   | undefined | yes      | initial field value                                                                        |
 | haystack   | array | undefined | yes      | Array of available items to search in. Items can take an arbitrary shape.                  |
 | onChange   | func  | undefined | yes      | onChange handler: function(e: React.FormEvent) {}                                          |
-| onMatch    | func  | undefined |          | Called when Tab/Enter/Right Arrow pressed                                                  |
+| onMatch    | func  | undefined |          | Called when Tab/Enter/Right Arrow pressed or value matches fully                           |
 | getFn      | func  | undefined |          | Used to read the display value from each entry in haystack: function(item: any): string {} |
 | ignoreCase | bool  | true      |          | Determines whether the case-sensitivity is relevant                                        |
 
