@@ -1,6 +1,6 @@
 # React Inline Suggest
 
-> [React](http://facebook.github.io/react/index.html) components for a search input inline suggestions.
+> [React](http://facebook.github.io/react/index.html) component for a search input inline suggestions.
 
 ## Installation
 
@@ -19,9 +19,9 @@ Live demo: [xmazu.github.io/react-inline-suggest](https://xmazu.github.io/react-
 
 ## Basic usage
 
-### Use SimpleInlineSuggest with complex array
+### Use InlineSuggest with complex array
 ```jsx
-import { SimpleInlineSuggest } from 'react-inline-suggest';
+import { InlineSuggest } from 'react-inline-suggest';
 
 const users = [
   {
@@ -47,7 +47,7 @@ class ExampleApp extends React.Component {
 
   render() {
     return (
-      <SimpleInlineSuggest 
+      <InlineSuggest 
         haystack={users}
         value={this.state.value}
         onChange={this.onChangeValue}
@@ -80,6 +80,5 @@ class ExampleApp extends React.Component {
 # Todo
 
 - [ ] better docs
-- [ ] create component InlineSuggest with transparent text suggestions
 - [ ] more tests
 - [ ] CI
