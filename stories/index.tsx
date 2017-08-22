@@ -66,7 +66,7 @@ storiesOf('InlineSuggest', module)
     }
   }
   return (
-    <div>
+    <div style={{ padding: 8 }}>
       <p>Type one of usernames {simpleUsers.join(', ')}</p>
       <Wrapper />
     </div>
@@ -103,7 +103,7 @@ storiesOf('InlineSuggest', module)
     }
   }
   return (
-    <div>
+    <div style={{ padding: 8 }}>
       <p>Type one of emails {complexUsers.map(u => u.email).join(', ')}</p>
       <Wrapper />
     </div>
