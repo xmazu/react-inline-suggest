@@ -13,8 +13,7 @@
       "scripthost",
       "dom",
       "es6"
-    ],
-    "importHelpers": true
+    ]
   },
   "include": [
     "./src/**/*.tsx",
