@@ -55,6 +55,7 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
             value={this.state.value}
             onChange={this.onChangeValue}
             onMatch={v => console.log(v)}
+            shouldRenderSuggestion={v => (v as string).trim().length > 2}
           />
         </div>
       </div>

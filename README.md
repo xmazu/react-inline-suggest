@@ -81,15 +81,15 @@ class ExampleApp extends React.Component {
 
 Component extends `React.HTMLProps<HTMLInputElement>` interface and adds some own props.
 
-| Property   | Type  |   Default | Required | Description                                                                                |
-|------------|-------|----------:|----------|--------------------------------------------------------------------------------------------|
-| value      | any   | undefined | yes      | initial field value                                                                        |
-| haystack   | array | undefined | yes      | Array of available items to search in. Items can take an arbitrary shape.                  |
-| onChange   | func  | undefined | yes      | onChange handler: function(e: React.FormEvent) {}                                          |
-| onMatch    | func  | undefined |          | Called when Tab/Enter/Right Arrow pressed or value matches fully                           |
-| getFn      | func  | undefined |          | Used to read the display value from each entry in haystack: function(item: any): string {} |
-| ignoreCase | bool  | true      |          | Determines whether the case-sensitivity is relevant                                        |
-
+| Property               | Type    |   Default | Required | Description                                                                                                          |
+|------------------------|---------|----------:|----------|----------------------------------------------------------------------------------------------------------------------|
+| value                  | any     | undefined | yes      | initial field value                                                                                                  |
+| haystack               | array   | undefined | yes      | Array of available items to search in. Items can take an arbitrary shape.                                            |
+| onChange               | func    | undefined | yes      | onChange handler: function(e: React.FormEvent) {}                                                                    |
+| onMatch                | func    | undefined |          | Called when Tab/Enter/Right Arrow pressed or value matches fully                                                     |
+| getFn                  | func    | undefined |          | Used to read the display value from each entry in haystack: function(item: any): string {}                           |
+| ignoreCase             | boolean |      true |          | Determines whether the case-sensitivity is relevant                                                                  |
+| shouldRenderSuggestion | func    | undefined |          | When typing, this function will be called to consult when to render the suggestion. function(value: any): boolean {} |
 
 ## Typings
 If you are using [TypeScript](https://www.typescriptlang.org/), you don't have to install typings - they are provided in npm package.

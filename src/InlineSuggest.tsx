@@ -2,17 +2,25 @@ import * as React from 'react';
 import { ReactElement } from 'react';
 
 import { KeyEnum } from './KeyEnum';
-import { SuggestType } from './Types';
 import { omit } from './util/omit';
 
-const propsToOmit = [
-  'haystack', 'getFn', 'onMatch', 'ignoreCase', 'className'
-];
+const propsToOmit = ['haystack', 'getFn', 'onMatch', 'ignoreCase', 'className'];
 
 export namespace InlineSuggest {
-  export type Props = React.HTMLProps<HTMLInputElement> & SuggestType.Props;
+  export type Props = React.HTMLProps<HTMLInputElement> & {
+    value: string;
+    haystack: any[];
+    onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
+    getFn?: (obj: any) => string;
+    onMatch?: (v: string | any) => void;
+    ignoreCase?: boolean;
+    shouldRenderSuggestion?: (value: string | any) => boolean;
+  };
 
-  export type State = SuggestType.State;
+  export type State = {
+    match: string | any;
+    needle: string;
+  };
 }
 
 export class InlineSuggest extends React.Component<
@@ -44,7 +52,24 @@ export class InlineSuggest extends React.Component<
           onKeyDown={this.handleOnKeyDown}
           onKeyUp={this.handleOnKeyUp}
         />
-        <div>{`${this.props.value}${this.state.needle}`}</div>
+        {this.renderSuggestion()}
+      </div>
+    );
+  }
+
+  private renderSuggestion() {
+    const { shouldRenderSuggestion, value } = this.props;
+
+    if (
+      shouldRenderSuggestion !== undefined &&
+      !shouldRenderSuggestion(value)
+    ) {
+      return null;
+    }
+
+    return (
+      <div>
+        {`${this.props.value}${this.state.needle}`}
       </div>
     );
   }
