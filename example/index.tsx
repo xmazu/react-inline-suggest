@@ -32,7 +32,7 @@ const users: User[] = [
   }
 ];
 
-const simpleUsers = ['xmazu', 'joHn', 'MaThEo'];
+const simpleUsers = ['maciek', 'magdalena', 'joHn', 'MaThEo'];
 
 class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
   constructor() {
@@ -51,19 +51,16 @@ class ExampleApp extends React.Component<ExampleApp.Props, ExampleApp.State> {
         <div style={{ width: 200 }}>
           <InlineSuggest
             className="input"
-            haystack={['xmazu', 'joHn', 'MaThEo']}
+            haystack={simpleUsers}
             value={this.state.value}
             onChange={this.onChangeValue}
             onMatch={v => console.log(v)}
-            shouldRenderSuggestion={v => (v as string).trim().length > 2}
+            shouldRenderSuggestion={v => (v as string).trim().length > 1}
+            switchBetweenSuggestions={true}
           />
         </div>
       </div>
     );
-  }
-
-  private getUsername(user: User) {
-    return user.email;
   }
 
   private onChangeValue = (e: React.SyntheticEvent<HTMLInputElement>) => {

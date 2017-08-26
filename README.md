@@ -11,6 +11,8 @@
 - Inline suggestion displayed in fancy way
 - Support simple arrays and complex arrays with objects
 - Accept value on **Enter**/**Tab**/**Right Arrow** click
+- Switch between suggestions using **UP**/**Down Arrow**
+- You decide when to render suggestion (eg. when user types 3 or more characters)
 
 ## Installation
 
@@ -81,15 +83,16 @@ class ExampleApp extends React.Component {
 
 Component extends `React.HTMLProps<HTMLInputElement>` interface and adds some own props.
 
-| Property               | Type    |   Default | Required | Description                                                                                                          |
-|------------------------|---------|----------:|----------|----------------------------------------------------------------------------------------------------------------------|
-| value                  | any     | undefined | yes      | initial field value                                                                                                  |
-| haystack               | array   | undefined | yes      | Array of available items to search in. Items can take an arbitrary shape.                                            |
-| onChange               | func    | undefined | yes      | onChange handler: function(e: React.FormEvent) {}                                                                    |
-| onMatch                | func    | undefined |          | Called when Tab/Enter/Right Arrow pressed or value matches fully                                                     |
-| getFn                  | func    | undefined |          | Used to read the display value from each entry in haystack: function(item: any): string {}                           |
-| ignoreCase             | boolean |      true |          | Determines whether the case-sensitivity is relevant                                                                  |
-| shouldRenderSuggestion | func    | undefined |          | When typing, this function will be called to consult when to render the suggestion. function(value: any): boolean {} |
+| Property                 | Type    |   Default | Required | Description                                                                                                          |
+|--------------------------|---------|----------:|----------|----------------------------------------------------------------------------------------------------------------------|
+| value                    | any     | undefined | yes      | initial field value                                                                                                  |
+| haystack                 | array   | undefined | yes      | Array of available items to search in. Items can take an arbitrary shape.                                            |
+| onChange                 | func    | undefined | yes      | onChange handler: function(e: React.FormEvent) {}                                                                    |
+| onMatch                  | func    | undefined |          | Called when Tab/Enter/Right Arrow pressed or value matches fully                                                     |
+| getFn                    | func    | undefined |          | Used to read the display value from each entry in haystack: function(item: any): string {}                           |
+| ignoreCase               | boolean |      true |          | Determines whether the case-sensitivity is relevant                                                                  |
+| shouldRenderSuggestion   | func    | undefined |          | When typing, this function will be called to consult when to render the suggestion. function(value: any): boolean {} |
+| switchBetweenSuggestions | boolean | false     |          | Set it to `true` if you would like to switch between suggestions using Up/Down arrows                                |
 
 ## Typings
 If you are using [TypeScript](https://www.typescriptlang.org/), you don't have to install typings - they are provided in npm package.
@@ -106,8 +109,8 @@ Now, open `http://localhost:8080` and start hacking!
 ## Todo
 
 - [x] CI
-- [ ] switch bettween suggestions by click up/down arrow
-- [ ] possibility to decide when show suggestions (e.g. when user types 2 or more characters)
+- [x] switch bettween suggestions by click up/down arrow
+- [x] possibility to decide when show suggestions (e.g. when user types 2 or more characters)
 - [ ] better docs
 - [ ] more tests
 

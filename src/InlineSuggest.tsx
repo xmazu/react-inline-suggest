@@ -4,7 +4,15 @@ import { ReactElement } from 'react';
 import { KeyEnum } from './KeyEnum';
 import { omit } from './util/omit';
 
-const propsToOmit = ['haystack', 'getFn', 'onMatch', 'ignoreCase', 'className'];
+const propsToOmit = [
+  'haystack',
+  'getFn',
+  'onMatch',
+  'ignoreCase',
+  'className',
+  'shouldRenderSuggestion',
+  'switchBetweenSuggestions'
+];
 
 export namespace InlineSuggest {
   export type Props = React.HTMLProps<HTMLInputElement> & {
@@ -15,11 +23,13 @@ export namespace InlineSuggest {
     onMatch?: (v: string | any) => void;
     ignoreCase?: boolean;
     shouldRenderSuggestion?: (value: string | any) => boolean;
+    switchBetweenSuggestions?: boolean;
   };
 
   export type State = {
-    match: string | any;
+    matchedArray: any[];
     needle: string;
+    activeIndex: number;
   };
 }
 
@@ -27,16 +37,20 @@ export class InlineSuggest extends React.Component<
   InlineSuggest.Props,
   InlineSuggest.State
 > {
-  static defaultProps = {
-    ignoreCase: true
+  static defaultProps: InlineSuggest.Props = {
+    ignoreCase: true,
+    switchBetweenSuggestions: false,
+    value: '',
+    haystack: []
   };
 
   constructor(props: InlineSuggest.Props) {
     super(props);
 
     this.state = {
-      match: null,
-      needle: ''
+      needle: '',
+      matchedArray: [],
+      activeIndex: 0
     };
   }
 
@@ -95,26 +109,29 @@ export class InlineSuggest extends React.Component<
     }
 
     const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
-    const match = haystack.find(
+    const matchedArray = haystack.filter(
       v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
     );
 
-    if (match) {
-      const matchedStr = getFn === undefined ? match : getFn(match);
+    if (matchedArray.length > 0) {
+      const matchedStr =
+        getFn === undefined ? matchedArray[0] : getFn(matchedArray[0]);
       const originalValue = matchedStr.substr(0, value.length);
       const needle = matchedStr.replace(originalValue, '');
       this.setState({
-        match,
-        needle
+        matchedArray,
+        needle,
+        activeIndex: 0
       });
 
       if (needle === '' && this.props.onMatch) {
-        this.props.onMatch(match);
+        this.props.onMatch(matchedArray[0]);
       }
     } else {
       this.setState({
-        match,
-        needle: ''
+        needle: '',
+        activeIndex: 0,
+        matchedArray: []
       });
     }
     this.fireOnChange(e);
@@ -133,12 +150,28 @@ export class InlineSuggest extends React.Component<
   private handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { keyCode } = e;
     const { needle } = this.state;
+    const { switchBetweenSuggestions } = this.props;
 
     if (
       needle !== '' &&
       (keyCode === KeyEnum.TAB || keyCode === KeyEnum.ENTER)
     ) {
       e.preventDefault();
+    }
+
+    const { activeIndex, matchedArray } = this.state;
+
+    if (switchBetweenSuggestions && keyCode === KeyEnum.UP_ARROW) {
+      e.preventDefault();
+      this.setNewActiveIndex(
+        activeIndex + 1 > matchedArray.length - 1 ? 0 : activeIndex + 1
+      );
+    }
+    if (switchBetweenSuggestions && keyCode === KeyEnum.DOWN_ARROW) {
+      e.preventDefault();
+      this.setNewActiveIndex(
+        activeIndex - 1 < 0 ? matchedArray.length - 1 : activeIndex - 1
+      );
     }
   };
 
@@ -168,8 +201,23 @@ export class InlineSuggest extends React.Component<
       this.fireOnChange(newEvent);
 
       if (this.props.onMatch) {
-        this.props.onMatch(this.state.match);
+        this.props.onMatch(this.state.matchedArray[this.state.activeIndex]);
       }
     }
+  };
+
+  private setNewActiveIndex = (index: number) => {
+    const { matchedArray } = this.state;
+    const { getFn, value } = this.props;
+
+    const matchedStr =
+      getFn === undefined ? matchedArray[index] : getFn(matchedArray[index]);
+    const originalValue = matchedStr.substr(0, value.length);
+    const needle = matchedStr.replace(originalValue, '');
+
+    this.setState({
+      activeIndex: index,
+      needle
+    });
   };
 }
