@@ -15,7 +15,9 @@ type User = {
 const simpleUsers = [
   'xmazu',
   'john',
-  'martin'
+  'martin',
+  'maximilian',
+  'jordi'
 ];
 
 const complexUsers: User[] = [
@@ -60,6 +62,8 @@ storiesOf('InlineSuggest', module)
             value={this.state.value}
             haystack={simpleUsers}
             onMatch={this.handleOnMatch}
+            shouldRenderSuggestion={v => (v as string).length > 1}
+            switchBetweenSuggestions
           />
         </div>
       );
