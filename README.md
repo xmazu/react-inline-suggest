@@ -65,7 +65,6 @@ class ExampleApp extends React.Component {
         haystack={users}
         value={this.state.value}
         onChange={this.onChangeValue}
-        getFn={this.getUsername}
         onMatch={v => console.log(v)}
         ignoreCase={false}
       />        
