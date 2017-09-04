@@ -2,8 +2,6 @@
 [![npm version](https://badge.fury.io/js/react-inline-suggest.svg)](https://badge.fury.io/js/react-inline-suggest)
 [![Build Status](https://travis-ci.org/xmazu/react-inline-suggest.svg?branch=master)](https://travis-ci.org/xmazu/react-inline-suggest)
 
-**Warning: API is not stable yet, will be from version 1.0**
-
 > [React](http://facebook.github.io/react/index.html) component for a search input inline suggestions.
 
 ## Features
@@ -104,14 +102,6 @@ yarn start
 ```
 
 Now, open `http://localhost:8080` and start hacking!
-
-## Todo
-
-- [x] CI
-- [x] switch bettween suggestions by click up/down arrow
-- [x] possibility to decide when show suggestions (e.g. when user types 2 or more characters)
-- [ ] better docs
-- [ ] more tests
 
 ## License
 MIT
