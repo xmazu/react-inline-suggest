@@ -35,9 +35,9 @@ storiesOf('InlineSuggest', module).add('Complex array', () => {
         <InlineSuggest
           onChange={this.handleOnChange}
           value={this.state.value}
-          haystack={complexUsers}
+          suggestions={complexUsers}
           onMatch={this.handleOnMatch}
-          getFn={u => u.email}
+          getSuggestionValue={u => u.email}
         />
       );
     }
