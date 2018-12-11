@@ -2,25 +2,22 @@
   "compilerOptions": {
     "outDir": "./lib",
     "target": "es5",
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "strictNullChecks": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["dom", "es6"],
     "removeComments": true,
     "declaration": true,
     "sourceMap": true,
     "jsx": "react",
-    "lib": [
-      "scripthost",
-      "dom",
-      "es6"
-    ]
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true
   },
-  "include": [
-    "./src/**/*.tsx",
-    "./src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "compileOnSave": true
+  "include": ["./src/index.ts"],
+  "exclude": ["node_modules"]
 }

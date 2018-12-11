@@ -1,50 +1,71 @@
-import * as React from 'react';
-import { ReactElement } from 'react';
+import React from 'react';
+import styled, { css } from 'styled-components';
 
 import { KeyEnum } from './KeyEnum';
-import { omit } from './util/omit';
 
-const propsToOmit = [
-  'haystack',
-  'getFn',
-  'onMatch',
-  'ignoreCase',
-  'className',
-  'shouldRenderSuggestion',
-  'switchBetweenSuggestions'
-];
+const styles = css`
+  letter-spacing: 0;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+`;
 
-export namespace InlineSuggest {
-  export type Props = React.HTMLProps<HTMLInputElement> & {
-    value: string;
-    haystack: any[];
-    onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
-    getFn?: (obj: any) => string;
-    onMatch?: (v: string | any) => void;
-    ignoreCase?: boolean;
-    shouldRenderSuggestion?: (value: string | any) => boolean;
-    switchBetweenSuggestions?: boolean;
-  };
+const Wrapper = styled.div`
+  position: relative;
+`;
 
-  export type State = {
-    matchedArray: any[];
-    needle: string;
-    activeIndex: number;
-  };
+const Input = styled.input`
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  background-color: transparent;
+  width: 100%;
+
+  ${styles};
+`;
+
+const Suggestion = styled.span`
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.4;
+  ${styles};
+  border-color: transparent;
+`;
+
+export interface Props<T = string> extends React.HTMLProps<HTMLInputElement> {
+  haystack: T[];
+  className?: string;
+  ignoreCase?: boolean;
+  switchBetweenSuggestions?: boolean;
+  value?: string;
+  getFn?(obj: T): string;
+  onMatch?(matchedValue: T): void;
+  shouldRenderSuggestion?(value: string): boolean;
 }
 
-export class InlineSuggest extends React.Component<
-  InlineSuggest.Props,
-  InlineSuggest.State
-> {
-  static defaultProps: InlineSuggest.Props = {
+export interface State<T> {
+  matchedArray: T[];
+  needle: string;
+  activeIndex: number;
+}
+
+export class InlineSuggest<T> extends React.Component<Props<T>, State<T>> {
+  static defaultProps: Props = {
     ignoreCase: true,
     switchBetweenSuggestions: false,
     value: '',
     haystack: []
   };
 
-  constructor(props: InlineSuggest.Props) {
+  constructor(props: Props<T>) {
     super(props);
 
     this.state = {
@@ -54,38 +75,34 @@ export class InlineSuggest extends React.Component<
     };
   }
 
-  render(): ReactElement<any> {
+  render() {
+    const { className, value } = this.props;
+
     return (
-      <div className={`inline-suggest ${this.props.className}`}>
-        <input
-          {...omit(this.props, propsToOmit)}
-          style={{ background: 'transparent' }}
-          value={this.props.value}
+      <Wrapper className={className}>
+        <Input
+          value={value}
           onChange={this.handleOnChange}
           onBlur={this.handleOnBlur}
           onKeyDown={this.handleOnKeyDown}
           onKeyUp={this.handleOnKeyUp}
         />
         {this.renderSuggestion()}
-      </div>
+      </Wrapper>
     );
   }
 
   private renderSuggestion() {
-    const { shouldRenderSuggestion, value } = this.props;
+    const { shouldRenderSuggestion, value = '' } = this.props;
 
     if (
-      shouldRenderSuggestion !== undefined &&
-      !shouldRenderSuggestion(value)
+      !shouldRenderSuggestion ||
+      (shouldRenderSuggestion && shouldRenderSuggestion(value))
     ) {
-      return null;
+      return <Suggestion>{`${value}${this.state.needle}`}</Suggestion>;
     }
 
-    return (
-      <div>
-        {`${this.props.value}${this.state.needle}`}
-      </div>
-    );
+    return null;
   }
 
   private fireOnChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -104,37 +121,37 @@ export class InlineSuggest extends React.Component<
       this.setState({
         needle: ''
       });
-
-      return false;
-    }
-
-    const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
-    const matchedArray = haystack.filter(
-      v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
-    );
-
-    if (matchedArray.length > 0) {
-      const matchedStr =
-        getFn === undefined ? matchedArray[0] : getFn(matchedArray[0]);
-      const originalValue = matchedStr.substr(0, value.length);
-      const needle = matchedStr.replace(originalValue, '');
-      this.setState({
-        matchedArray,
-        needle,
-        activeIndex: 0
-      });
-
-      if (needle === '' && this.props.onMatch) {
-        this.props.onMatch(matchedArray[0]);
-      }
     } else {
-      this.setState({
-        needle: '',
-        activeIndex: 0,
-        matchedArray: []
-      });
+      const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
+      const matchedArray = haystack.filter(v =>
+        getFn === undefined ? rx.test(String(v)) : rx.test(getFn(v))
+      );
+
+      if (matchedArray.length > 0) {
+        const matchedStr =
+          getFn === undefined
+            ? String(matchedArray[0])
+            : getFn(matchedArray[0]);
+        const originalValue = matchedStr.substr(0, value.length);
+        const needle = matchedStr.replace(originalValue, '');
+        this.setState({
+          matchedArray,
+          needle,
+          activeIndex: 0
+        });
+
+        if (needle === '' && this.props.onMatch) {
+          this.props.onMatch(matchedArray[0]);
+        }
+      } else {
+        this.setState({
+          needle: '',
+          activeIndex: 0,
+          matchedArray: []
+        });
+      }
+      this.fireOnChange(e);
     }
-    this.fireOnChange(e);
   };
 
   private handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -208,10 +225,12 @@ export class InlineSuggest extends React.Component<
 
   private setNewActiveIndex = (index: number) => {
     const { matchedArray } = this.state;
-    const { getFn, value } = this.props;
+    const { getFn, value = '' } = this.props;
 
     const matchedStr =
-      getFn === undefined ? matchedArray[index] : getFn(matchedArray[index]);
+      getFn === undefined
+        ? String(matchedArray[index])
+        : getFn(matchedArray[index]);
     const originalValue = matchedStr.substr(0, value.length);
     const needle = matchedStr.replace(originalValue, '');
 
