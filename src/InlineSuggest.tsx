@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import memoize from 'lodash.memoize';
 
 import { KeyEnum } from './KeyEnum';
 import { ShouldRenderSugestionFn, GetSuggestionValueFn } from './types';
@@ -20,10 +21,10 @@ export interface Props<T = string> {
   className?: string;
   getSuggestionValue?: GetSuggestionValueFn<T>;
   ignoreCase?: boolean;
+  inputValue?: string;
   navigate?: boolean;
   shouldRenderSuggestion?: ShouldRenderSugestionFn;
   suggestions: T[];
-  inputValue?: string;
   onInputBlur?(value: string): void;
   onInputChange(newValue: string): void;
   onMatch?(matchedValue: T): void;
@@ -49,8 +50,9 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
     value: ''
   };
 
+  private memoizedFilterSuggestions = memoize(filterSuggestions);
+
   render() {
-    const needle = this.getNeedle();
     return (
       <Wrapper className={this.props.className}>
         <Input
@@ -62,7 +64,7 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
         />
         <Suggestion
           value={this.state.value}
-          needle={needle}
+          needle={this.getNeedle()}
           shouldRenderSuggestion={this.props.shouldRenderSuggestion}
         />
       </Wrapper>
@@ -79,10 +81,12 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
     const valueFromEvent = e.currentTarget.value;
     const { getSuggestionValue, suggestions, ignoreCase } = this.props;
 
-    const newMatchedArray = filterSuggestions(suggestions, valueFromEvent, {
-      ignoreCase: Boolean(ignoreCase),
+    const newMatchedArray = this.memoizedFilterSuggestions(
+      valueFromEvent,
+      suggestions,
+      Boolean(ignoreCase),
       getSuggestionValue
-    });
+    );
 
     this.setState({
       activeIndex: newMatchedArray.length > 0 ? 0 : -1,
@@ -91,7 +95,7 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
     this.fireOnChange(valueFromEvent);
   };
 
-  private handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  private handleOnBlur = () => {
     if (this.props.onInputBlur) {
       this.props.onInputBlur(this.state.value);
     }
@@ -116,13 +120,12 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
       e.preventDefault();
     }
 
-    const matchedSuggestions = this.getMatchedSuggestions();
-
     if (
       navigate &&
       (keyCode === KeyEnum.DOWN_ARROW || keyCode === KeyEnum.UP_ARROW)
     ) {
-      this.setState(prevState => ({
+      const matchedSuggestions = this.getMatchedSuggestions();
+      this.setState({
         activeIndex:
           keyCode === KeyEnum.DOWN_ARROW
             ? getNextSafeIndexFromArray(
@@ -133,7 +136,7 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
                 matchedSuggestions,
                 this.state.activeIndex
               )
-      }));
+      });
     }
   };
 
@@ -166,10 +169,12 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
   };
 
   private getMatchedSuggestions = () => {
-    return filterSuggestions(this.props.suggestions, this.state.value, {
-      ignoreCase: Boolean(this.props.ignoreCase),
-      getSuggestionValue: this.props.getSuggestionValue
-    });
+    return this.memoizedFilterSuggestions(
+      this.state.value,
+      this.props.suggestions,
+      Boolean(this.props.ignoreCase),
+      this.props.getSuggestionValue
+    ) as T[];
   };
 
   private getNeedle = () => {

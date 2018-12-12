@@ -1,23 +1,19 @@
 import { GetSuggestionValueFn } from './types';
 
-export interface SuggestionFilterOptions<T> {
-  ignoreCase: boolean;
-  getSuggestionValue?: GetSuggestionValueFn<T>;
-}
-
 export function filterSuggestions<T>(
-  suggestions: T[],
   value: string,
-  options: SuggestionFilterOptions<T>
+  suggestions: T[],
+  ignoreCase: boolean,
+  getSuggestionValue?: GetSuggestionValueFn<T>
 ) {
   if (!value) {
     return [];
   }
 
-  const rx = RegExp(`^${value}`, options.ignoreCase ? 'i' : undefined);
+  const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
   return suggestions.filter(suggestion =>
-    options.getSuggestionValue
-      ? rx.test(options.getSuggestionValue(suggestion))
+    getSuggestionValue
+      ? rx.test(getSuggestionValue(suggestion))
       : rx.test(String(suggestion))
   );
 }
