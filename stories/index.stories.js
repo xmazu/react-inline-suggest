@@ -14,6 +14,11 @@ const complexUsers = [
     id: 2,
     username: 'john_doe',
     email: 'john@doe.com'
+  },
+  {
+    id: 3,
+    username: 'joshua_doe',
+    email: 'joshua@doe.com'
   }
 ];
 
@@ -37,6 +42,7 @@ storiesOf('InlineSuggest', module).add('Complex array', () => {
           value={this.state.value}
           suggestions={complexUsers}
           onMatch={this.handleOnMatch}
+          navigate
           getSuggestionValue={u => u.email}
         />
       );
