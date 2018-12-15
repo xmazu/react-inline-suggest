@@ -151,7 +151,7 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
     ) {
       const matchedSuggestions = this.getMatchedSuggestions();
       const matchedValue = matchedSuggestions[this.state.activeIndex];
-
+      
       const newValue = this.props.getSuggestionValue
         ? this.props.getSuggestionValue(matchedValue)
         : String(matchedValue);
@@ -178,11 +178,11 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
   };
 
   private getNeedle = () => {
-    if (this.state.activeIndex === -1) {
+    const matchedSuggestions = this.getMatchedSuggestions();
+
+    if (!matchedSuggestions[this.state.activeIndex]) {
       return '';
     }
-
-    const matchedSuggestions = this.getMatchedSuggestions();
 
     return getNeedleFromString(
       this.props.getSuggestionValue
