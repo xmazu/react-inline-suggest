@@ -58,6 +58,7 @@
     "@types/styled-jsx": "^2.2.7",
     "babel-loader": "^8.0.4",
     "enzyme": "^3.8.0",
+    "enzyme-adapter-react-16": "^1.7.1",
     "git-directory-deploy": "^1.5.1",
     "jest": "^23.6.0",
     "lodash.memoize": "^4.1.2",
@@ -76,6 +77,8 @@
     "styled-components": "^4.1.2"
   },
   "jest": {
+    "testEnvironment": "node",
+    "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js",
     "transform": {
       ".(ts|tsx)": "ts-jest"
     },
@@ -84,12 +87,21 @@
       "/lib/"
     ],
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleDirectories": [
+      "src",
+      "node_modules"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
       "js",
       "json"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.test.json"
+      }
+    }
   },
   "dependencies": {}
 }

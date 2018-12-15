@@ -8,14 +8,14 @@ const simpleUsers = ['xmazu', 'sam', 'frodo', 'john'];
 describe('<SimpleInlineSuggest />', () => {
   it('sets value', () => {
     const wrapper = shallow(
-      <InlineSuggest value="john" haystack={simpleUsers} />
+      <InlineSuggest value="john" suggestions={simpleUsers} />
     );
     expect(wrapper.find('input').props().value).toBe('john');
   });
 
   it('does change a value via props', () => {
     const wrapper = shallow(
-      <InlineSuggest value="john" haystack={simpleUsers} />
+      <InlineSuggest value="john" suggestions={simpleUsers} />
     );
     wrapper.setProps({
       value: 'xmazu'

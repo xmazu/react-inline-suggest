@@ -26,7 +26,7 @@ export interface Props<T = string> {
   shouldRenderSuggestion?: ShouldRenderSugestionFn;
   suggestions: T[];
   onInputBlur?(value: string): void;
-  onInputChange(newValue: string): void;
+  onInputChange?(newValue: string): void;
   onMatch?(matchedValue: T): void;
 }
 
@@ -151,7 +151,7 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
     ) {
       const matchedSuggestions = this.getMatchedSuggestions();
       const matchedValue = matchedSuggestions[this.state.activeIndex];
-      
+
       const newValue = this.props.getSuggestionValue
         ? this.props.getSuggestionValue(matchedValue)
         : String(matchedValue);
