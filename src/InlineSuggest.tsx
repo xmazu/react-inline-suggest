@@ -1,223 +1,196 @@
-import * as React from 'react';
-import { ReactElement } from 'react';
+import React from 'react';
+import styled from 'styled-components';
+import memoize from 'lodash.memoize';
 
 import { KeyEnum } from './KeyEnum';
-import { omit } from './util/omit';
+import { ShouldRenderSugestionFn, GetSuggestionValueFn } from './types';
+import Suggestion from './components/Suggestion';
+import Input from './components/Input';
+import {
+  filterSuggestions,
+  getNeedleFromString,
+  getNextSafeIndexFromArray,
+  getPreviousSafeIndexFromArray
+} from './utils';
 
-const propsToOmit = [
-  'haystack',
-  'getFn',
-  'onMatch',
-  'ignoreCase',
-  'className',
-  'shouldRenderSuggestion',
-  'switchBetweenSuggestions'
-];
+const Wrapper = styled.div`
+  position: relative;
+`;
 
-export namespace InlineSuggest {
-  export type Props = React.HTMLProps<HTMLInputElement> & {
-    value: string;
-    haystack: any[];
-    onChange?: (e: React.FormEvent<HTMLInputElement>) => void;
-    getFn?: (obj: any) => string;
-    onMatch?: (v: string | any) => void;
-    ignoreCase?: boolean;
-    shouldRenderSuggestion?: (value: string | any) => boolean;
-    switchBetweenSuggestions?: boolean;
-  };
-
-  export type State = {
-    matchedArray: any[];
-    needle: string;
-    activeIndex: number;
-  };
+export interface Props<T = string> {
+  className?: string;
+  getSuggestionValue?: GetSuggestionValueFn<T>;
+  ignoreCase?: boolean;
+  inputValue?: string;
+  navigate?: boolean;
+  shouldRenderSuggestion?: ShouldRenderSugestionFn;
+  suggestions: T[];
+  onInputBlur?(value: string): void;
+  onInputChange?(newValue: string): void;
+  onMatch?(matchedValue: T): void;
 }
 
-export class InlineSuggest extends React.Component<
-  InlineSuggest.Props,
-  InlineSuggest.State
-> {
-  static defaultProps: InlineSuggest.Props = {
+export interface State {
+  activeIndex: number;
+  focused: boolean;
+  value: string;
+}
+
+export class InlineSuggest<T> extends React.Component<Props<T>, State> {
+  static defaultProps = {
     ignoreCase: true,
+    suggestions: [],
     switchBetweenSuggestions: false,
-    value: '',
-    haystack: []
+    value: ''
   };
 
-  constructor(props: InlineSuggest.Props) {
-    super(props);
+  state = {
+    activeIndex: -1,
+    focused: false,
+    value: ''
+  };
 
-    this.state = {
-      needle: '',
-      matchedArray: [],
-      activeIndex: 0
-    };
-  }
+  private memoizedFilterSuggestions = memoize(filterSuggestions);
 
-  render(): ReactElement<any> {
+  render() {
     return (
-      <div className={`inline-suggest ${this.props.className}`}>
-        <input
-          {...omit(this.props, propsToOmit)}
-          style={{ background: 'transparent' }}
-          value={this.props.value}
+      <Wrapper className={this.props.className}>
+        <Input
+          value={this.state.value}
           onChange={this.handleOnChange}
           onBlur={this.handleOnBlur}
           onKeyDown={this.handleOnKeyDown}
           onKeyUp={this.handleOnKeyUp}
         />
-        {this.renderSuggestion()}
-      </div>
+        <Suggestion
+          value={this.state.value}
+          needle={this.getNeedle()}
+          shouldRenderSuggestion={this.props.shouldRenderSuggestion}
+        />
+      </Wrapper>
     );
   }
 
-  private renderSuggestion() {
-    const { shouldRenderSuggestion, value } = this.props;
-
-    if (
-      shouldRenderSuggestion !== undefined &&
-      !shouldRenderSuggestion(value)
-    ) {
-      return null;
-    }
-
-    return (
-      <div>
-        {`${this.props.value}${this.state.needle}`}
-      </div>
-    );
-  }
-
-  private fireOnChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (this.props.onChange) {
-      this.props.onChange(e);
+  private fireOnChange = (newValue: string) => {
+    if (this.props.onInputChange) {
+      this.props.onInputChange(newValue);
     }
   };
 
   private handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const { currentTarget } = e;
-    const { value } = currentTarget;
-    const { getFn, haystack, ignoreCase } = this.props;
+    const valueFromEvent = e.currentTarget.value;
+    const { getSuggestionValue, suggestions, ignoreCase } = this.props;
 
-    if (value.length === 0) {
-      this.fireOnChange(e);
-      this.setState({
-        needle: ''
-      });
-
-      return false;
-    }
-
-    const rx = RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
-    const matchedArray = haystack.filter(
-      v => (getFn === undefined ? rx.test(v) : rx.test(getFn(v)))
+    const newMatchedArray = this.memoizedFilterSuggestions(
+      valueFromEvent,
+      suggestions,
+      Boolean(ignoreCase),
+      getSuggestionValue
     );
 
-    if (matchedArray.length > 0) {
-      const matchedStr =
-        getFn === undefined ? matchedArray[0] : getFn(matchedArray[0]);
-      const originalValue = matchedStr.substr(0, value.length);
-      const needle = matchedStr.replace(originalValue, '');
-      this.setState({
-        matchedArray,
-        needle,
-        activeIndex: 0
-      });
-
-      if (needle === '' && this.props.onMatch) {
-        this.props.onMatch(matchedArray[0]);
-      }
-    } else {
-      this.setState({
-        needle: '',
-        activeIndex: 0,
-        matchedArray: []
-      });
-    }
-    this.fireOnChange(e);
+    this.setState({
+      activeIndex: newMatchedArray.length > 0 ? 0 : -1,
+      value: valueFromEvent
+    });
+    this.fireOnChange(valueFromEvent);
   };
 
-  private handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    this.setState({
-      needle: ''
-    });
-
-    if (this.props.onBlur) {
-      this.props.onBlur(e);
+  private handleOnBlur = () => {
+    if (this.props.onInputBlur) {
+      this.props.onInputBlur(this.state.value);
     }
   };
 
   private handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (this.state.activeIndex === -1) {
+      return;
+    }
+
     const { keyCode } = e;
-    const { needle } = this.state;
-    const { switchBetweenSuggestions } = this.props;
+    const { navigate } = this.props;
+
+    const allowedKeyCodes = [
+      KeyEnum.TAB,
+      KeyEnum.ENTER,
+      KeyEnum.UP_ARROW,
+      KeyEnum.DOWN_ARROW
+    ];
+
+    if (allowedKeyCodes.includes(keyCode)) {
+      e.preventDefault();
+    }
 
     if (
-      needle !== '' &&
-      (keyCode === KeyEnum.TAB || keyCode === KeyEnum.ENTER)
+      navigate &&
+      (keyCode === KeyEnum.DOWN_ARROW || keyCode === KeyEnum.UP_ARROW)
     ) {
-      e.preventDefault();
-    }
-
-    const { activeIndex, matchedArray } = this.state;
-
-    if (switchBetweenSuggestions && keyCode === KeyEnum.UP_ARROW) {
-      e.preventDefault();
-      this.setNewActiveIndex(
-        activeIndex + 1 > matchedArray.length - 1 ? 0 : activeIndex + 1
-      );
-    }
-    if (switchBetweenSuggestions && keyCode === KeyEnum.DOWN_ARROW) {
-      e.preventDefault();
-      this.setNewActiveIndex(
-        activeIndex - 1 < 0 ? matchedArray.length - 1 : activeIndex - 1
-      );
+      const matchedSuggestions = this.getMatchedSuggestions();
+      this.setState({
+        activeIndex:
+          keyCode === KeyEnum.DOWN_ARROW
+            ? getNextSafeIndexFromArray(
+                matchedSuggestions,
+                this.state.activeIndex
+              )
+            : getPreviousSafeIndexFromArray(
+                matchedSuggestions,
+                this.state.activeIndex
+              )
+      });
     }
   };
 
   private handleOnKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { keyCode } = e;
-    const { needle } = this.state;
 
     if (
-      needle !== '' &&
+      this.state.activeIndex >= 0 &&
       (keyCode === KeyEnum.TAB ||
         keyCode === KeyEnum.ENTER ||
         keyCode === KeyEnum.RIGHT_ARROW)
     ) {
-      const newValue = `${this.props.value}${this.state.needle}`;
-      const newEvent = {
-        ...e,
-        currentTarget: {
-          ...e.currentTarget,
-          value: newValue
-        }
-      };
+      const matchedSuggestions = this.getMatchedSuggestions();
+      const matchedValue = matchedSuggestions[this.state.activeIndex];
+
+      const newValue = this.props.getSuggestionValue
+        ? this.props.getSuggestionValue(matchedValue)
+        : String(matchedValue);
 
       this.setState({
-        needle: ''
+        value: newValue
       });
 
-      this.fireOnChange(newEvent);
+      this.fireOnChange(newValue);
 
       if (this.props.onMatch) {
-        this.props.onMatch(this.state.matchedArray[this.state.activeIndex]);
+        this.props.onMatch(matchedValue);
       }
     }
   };
 
-  private setNewActiveIndex = (index: number) => {
-    const { matchedArray } = this.state;
-    const { getFn, value } = this.props;
+  private getMatchedSuggestions = () => {
+    return this.memoizedFilterSuggestions(
+      this.state.value,
+      this.props.suggestions,
+      Boolean(this.props.ignoreCase),
+      this.props.getSuggestionValue
+    ) as T[];
+  };
 
-    const matchedStr =
-      getFn === undefined ? matchedArray[index] : getFn(matchedArray[index]);
-    const originalValue = matchedStr.substr(0, value.length);
-    const needle = matchedStr.replace(originalValue, '');
+  private getNeedle = () => {
+    const matchedSuggestions = this.getMatchedSuggestions();
 
-    this.setState({
-      activeIndex: index,
-      needle
-    });
+    if (!matchedSuggestions[this.state.activeIndex]) {
+      return '';
+    }
+
+    return getNeedleFromString(
+      this.props.getSuggestionValue
+        ? this.props.getSuggestionValue(
+            matchedSuggestions[this.state.activeIndex]
+          )
+        : String(matchedSuggestions[this.state.activeIndex]),
+      this.state.value
+    );
   };
 }

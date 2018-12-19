@@ -1,6 +1,5 @@
-node_modules/*
+node_modules
 npm-debug.log
-lib/*
-dist/*
+lib
 coverage/*
 .gh-pages/*

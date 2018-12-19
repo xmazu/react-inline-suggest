@@ -1,11 +1,5 @@
 language: node_js
 node_js: node
 cache: yarn
-deploy:
-  provider: npm
-  email: xmazu@yahoo.com
-  api_key:
-    secure: XcLjd4j9MEw9QG74WOz3d5Kh88gx/A3m/6GSrwhZdupUAeYg6ul7QoNIKNUBI2qyj8ImHTXSvb3mfO7VOwqO0UOj+snxWZMJtXTAIQrI3Yf4aAhta8SvYTmhoAg7PlR7sCZwBwu20tOCv8Y9zqGqpqtXjWrmxev76c9S9URLczfYJJDUggm3MU8/We+MYtLHSmpKZKlXGW9HkwdA4CV6AB7wsRb+FcCbXN723s8AVzUUTagvtKd42AXFkLNlbNGteblFkhsTCFQs1b+mXrHWgGxuunEiAcAUxMhoaZ/UUI0QhDVJJm5DDg6i5+/mmfkwD2HUw3brkhI20I2Gp/Yym0EnBCZAORbx7Xseuwbp5jz6Q2YJrJJLBRByHKUaYtnhm+lVmD7oGikp+YaXjtcE0xIJkLXEpcyZc+/hi/m8nCih5PSNYU6YBSH4UeV9xTCdEnWzfqUQ2ysCtaWOXZbeD9ArxaUfMb2cSzQUOH3n/OCbdZtNax1g43Le4Sv+HEVGc4afnJ8P1/bu5yEuekl8gicvMrGNA1uswMCwiKsMEh0EbBgYJ6gv61WntPBhG0o+EkA7ZU8EAD92moevKinHsdT//GsV18yR3Y0i6Q326hi2QRD09kbVVQpczT9ay6BqktrECZgvQEvzJBeVGLrwcd6qhUDU/OY6126swHZq6Do=
-  on:
-    tags: true
-    repo: xmazu/react-inline-suggest
+script:
+  - npm test
