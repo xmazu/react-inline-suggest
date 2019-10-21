@@ -19,6 +19,7 @@ const Wrapper = styled.div`
 
 export interface Props<T = string> {
   className?: string;
+  initialValue?: string;
   getSuggestionValue?: GetSuggestionValueFn<T>;
   ignoreCase?: boolean;
   inputValue?: string;
@@ -48,7 +49,15 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
     activeIndex: -1,
     focused: false,
     value: ''
-  };
+  }
+
+  componentDidMount() {
+    if (this.props.initialValue) {
+      this.setState({
+        value: this.props.initialValue
+      })
+    }
+  }
 
   private memoizedFilterSuggestions = memoize(filterSuggestions);
 
