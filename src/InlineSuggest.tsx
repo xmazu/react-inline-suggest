@@ -101,7 +101,6 @@ export class InlineSuggest<T> extends React.Component<Props<T>, State> {
       activeIndex: newMatchedArray.length > 0 ? 0 : -1,
       value: valueFromEvent
     });
-    console.log('valueFromEvent', valueFromEvent)
     this.fireOnChange(valueFromEvent);
   };
 
